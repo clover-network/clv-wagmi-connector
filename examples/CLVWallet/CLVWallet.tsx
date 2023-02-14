@@ -35,7 +35,7 @@ export class CLVConnector extends InjectedConnector {
   } = {}) {
 
     const options = {
-      name: 'src',
+      name: 'CLVWallet',
       shimDisconnect: true,
       shimChainChangedDisconnect: true,
       getProvider() {
@@ -56,6 +56,7 @@ export class CLVConnector extends InjectedConnector {
         }
 
         if (typeof window === 'undefined') return
+        // @ts-ignore
         const clover = window['clover'] as Ethereum | undefined
         if (clover?.providers) {
           return clover.providers.find(getReady)
@@ -71,7 +72,6 @@ export class CLVConnector extends InjectedConnector {
   }
   async connect({chainId}:{chainId?:number}){
     try{
-      debugger
       const provider = await  this.getProvider()
       if(!provider) throw new ConnectorNotFoundError()
       if(provider.on){

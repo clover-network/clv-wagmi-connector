@@ -1,0 +1,69 @@
+Arguments: 
+  /Users/sophie/.nvm/versions/node/v14.20.1/bin/node /usr/local/bin/yarn add @rainbow-me/rainbowkit
+
+PATH: 
+  /Users/sophie/.nvm/versions/node/v14.20.1/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin:/Users/sophie/clv-wagmi-connector/node_modules/.bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  14.20.1
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.npmmirror.com/ethers: tunneling socket could not be established, cause=connect ECONNREFUSED 127.0.0.1:7890
+      at ClientRequest.onError (/usr/local/lib/node_modules/yarn/lib/cli.js:152376:17)
+      at Object.onceWrapper (events.js:520:26)
+      at ClientRequest.emit (events.js:400:28)
+      at Socket.socketErrorListener (_http_client.js:475:9)
+      at Socket.emit (events.js:400:28)
+      at emitErrorNT (internal/streams/destroy.js:106:8)
+      at emitErrorCloseNT (internal/streams/destroy.js:74:3)
+      at processTicksAndRejections (internal/process/task_queues.js:82:21)
+
+npm manifest: 
+  {
+    "name": "clv-wagmi-connector",
+    "publishConfig": {
+      "access": "public"
+    },
+    "version": "1.0.0",
+    "description": "clv wagmi connector",
+    "keywords": [
+      "react",
+      "hooks",
+      "ethereum",
+      "javascript",
+      "typescript",
+      "web3",
+      "context",
+      "frontend",
+      "dapp",
+      "metamask",
+      "clover"
+    ],
+    "repository": {
+      "type": "git",
+      "url": " https://github.com/clover-network/clv-wagmi-connector.git"
+    },
+    "main": "dist/index.js",
+    "module": "dist/clv-connector.esm.js",
+    "typings": "dist/index.d.ts",
+    "files": [
+      "dist"
+    ],
+    "dependencies": {
+      "@rainbow-me/rainbowkit": "^0.8.1",
+      "ethers": "^5.0.0",
+      "wagmi": "^0.9.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

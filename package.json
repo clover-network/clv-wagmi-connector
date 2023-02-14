@@ -1,0 +1,51 @@
+{
+  "name": "clv-wagmi-connector",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.js"
+  },
+  "version": "1.0.0",
+  "description": "clv wagmi connector",
+  "keywords": [
+    "react",
+    "hooks",
+    "ethereum",
+    "javascript",
+    "typescript",
+    "web3",
+    "context",
+    "frontend",
+    "dapp",
+    "metamask",
+    "clover"
+  ],
+  "repository": {
+    "type": "git",
+    "url": " https://github.com/clover-network/clv-wagmi-connector.git"
+  },
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^0.8.1",
+    "@wagmi/core": "^0.9.5",
+    "@web3-react/core": "^6.1.9",
+    "ethers": "^5.0.8",
+    "wagmi": "0.11.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "@types/react": "^18.0.28",
+    "eslint": "^8.34.0",
+    "eslint-config-next": "^13.1.6",
+    "tsup": "^6.6.2",
+    "typescript": "^4.7.2"
+  }
+}
