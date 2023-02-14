@@ -1,0 +1,28 @@
+{
+  "name": "my-rainbowkit-app",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "../my-rainbowkit-app/node_modules/.bin/next dev",
+    "build": "../my-rainbowkit-app/node_modules/.bin/next build",
+    "start": "../my-rainbowkit-app/node_modules/.bin/next start",
+    "lint": "../my-rainbowkit-app/node_modules/.bin/next lint"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^0.8.1",
+    "@web3-react/core": "^6.1.9",
+    "clv-wagmi-connector": "file:../clv-wagmi-connector",
+    "ethers": "^5.0.8",
+    "next": "^13.1.6",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "wagmi": "0.11.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "@types/react": "^18.0.9",
+    "eslint": "^8.15.0",
+    "eslint-config-next": "^13.1.6",
+    "typescript": "^4.7.2"
+  }
+}
