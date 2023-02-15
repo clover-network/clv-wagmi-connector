@@ -85,7 +85,6 @@ const CLVConnectButton = () => {
 import {ConnectButton} from '@rainbow-me/rainbowkit';
 
 const RainbowKitConnectButton = () => {
-  const {connectors, connect} = useConnect()
   return (
     <ConnectButton/>
   )
