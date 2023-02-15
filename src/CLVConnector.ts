@@ -3,7 +3,6 @@ import {
   Address,
   ChainNotConfiguredError,
   ConnectorNotFoundError,
-  getClient,
   InjectedConnector,
   InjectedConnectorOptions,
   normalizeChainId,
@@ -52,14 +51,6 @@ export class CLVConnector extends InjectedConnector {
           // @ts-ignore
           const isClover = !!ethereum?.isClover
           if (!isClover) return
-          // Brave tries to make itself look like MetaMask
-          // Could also try RPC `web3_clientVersion` if following is unreliable
-          if (ethereum.isBraveWallet && !ethereum._events && !ethereum._state) return
-          if (ethereum.isAvalanche) return
-          if (ethereum.isKuCoinWallet) return
-          if (ethereum.isPortal) return
-          if (ethereum.isTokenPocket) return
-          if (ethereum.isTokenary) return
           return ethereum
         }
 
@@ -91,7 +82,7 @@ export class CLVConnector extends InjectedConnector {
       if (
         this.#UNSTABLE_shimOnConnectSelectAccount &&
         this.options?.shimDisconnect &&
-        !getClient().storage?.getItem(this.shimDisconnectKey)
+        !localStorage?.getItem(this.shimDisconnectKey)
       ) {
         account = await this.getAccount().catch(() => null)
         const isConnected = !!account
@@ -126,7 +117,7 @@ export class CLVConnector extends InjectedConnector {
         unsupported = this.isChainUnsupported(id)
       }
 
-      if (this.options?.shimDisconnect) getClient().storage?.setItem(this.shimDisconnectKey, true)
+      if (this.options?.shimDisconnect) localStorage?.setItem(this.shimDisconnectKey, 'true')
 
       return { account, chain: { id, unsupported }, provider }
     } catch (error) {
@@ -145,7 +136,7 @@ export class CLVConnector extends InjectedConnector {
     provider.removeListener('disconnect', this.onDisconnect)
 
     // Remove shim signalling wallet is disconnected
-    if (this.options.shimDisconnect) getClient().storage?.removeItem(this.shimDisconnectKey)
+    if (this.options.shimDisconnect) localStorage?.removeItem(this.shimDisconnectKey)
   }
 
   async getAccount() {
@@ -242,7 +233,7 @@ export class CLVConnector extends InjectedConnector {
       if (
         this.options.shimDisconnect &&
         // If shim does not exist in storage, wallet is disconnected
-        !getClient().storage?.getItem(this.shimDisconnectKey)
+        !localStorage?.getItem(this.shimDisconnectKey)
       )
         return false
 
@@ -279,7 +270,7 @@ export class CLVConnector extends InjectedConnector {
 
     this.emit('disconnect')
     // Remove shim signalling wallet is disconnected
-    if (this.options.shimDisconnect) getClient().storage?.removeItem(this.shimDisconnectKey)
+    if (this.options.shimDisconnect) localStorage?.removeItem(this.shimDisconnectKey)
   }
 
   protected isUserRejectedRequestError(error: unknown) {

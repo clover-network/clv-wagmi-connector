@@ -1,2 +1,2 @@
-export * from './CLVWallet'
+export * from './CLVConnector'
 export * from './types'
