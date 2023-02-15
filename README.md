@@ -1,21 +1,28 @@
-# clv-wagmi-connector
+# @clover-network/clv-wagmi-connector
 
-clv-wagmi-connector is a tool that can connect the clv wallet to wagmi.
+@clover-network/clv-wagmi-connector is a custom wagmi connector for CLV Wallet
 
 The use of wagmi can be referred to: https://wagmi.sh
 
-## How to use CLVConnector
+## How to use @clover-network/clv-wagmi-connector
 
-### 1. Add CLVConnector dependency in the project
-
-`yarn add clv-wagmi-connector`
-
-### 2. How to generate an instance of CLVConnector
-
-#### 2.1 Create a CLVConnector instance and put it in the wallet list
+### Install
 
 ```ts
-import {CLVConnector} from "clv-wagmi-connector";
+yarn add @clover-network/clv-wagmi-connector
+```
+
+### Use with RainbowKit
+
+#### Create a custom Wallet of RainbowKit with CLVConnector
+
+```ts
+import { CLVConnector } from "@clover-network/clv-wagmi-connector";
+import { Wallet } from '@rainbow-me/rainbowkit';
+
+interface MyWalletOptions {
+  chains: Chain[]
+}
 
 const CLVWallet = ({chains}: MyWalletOptions): Wallet => ({
   id: 'CLV',
@@ -32,7 +39,7 @@ const CLVWallet = ({chains}: MyWalletOptions): Wallet => ({
 })
 ```
 
-#### 2.2 Apply the CLVConnector instance to the connector list and create a wagmi client
+#### Apply the custom Wallet to RainbowKit connectorsForWallets
 
 ```ts
 import {connectorsForWallets} from '@rainbow-me/rainbowkit';
@@ -47,6 +54,7 @@ const connectors = connectorsForWallets([{
 }] as WalletList)
 ```
 
+#### Create wagmi client
 ````ts
 const wagmiClient = createClient({
   autoConnect: true,
@@ -56,30 +64,21 @@ const wagmiClient = createClient({
 });
 ````
 
-### 3. Two ways of using the client created
-
-#### 3.1 Create a separate CLVConnector button
+#### Use Providers
 
 ```tsx
-import {useConnect} from "wagmi";
-
-const CLVConnectButton = () => {
-  const {connectors, connect} = useConnect()
+function MyApp({Component, pageProps}: AppProps) {
   return (
-    {
-      connectors.map((connector) => (
-        <button
-          suppressContentEditableWarning
-          key={connector.id}
-          onClick={() => connect({connector})}
-        >{connector.name}</button>
-      ))
-    }
-  )
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains}>
+        <Component {...pageProps} />
+      </RainbowKitProvider>
+    </WagmiConfig>
+  );
 }
 ```
 
-#### 3.2 Add the CLVConnector to the rainbowkit's wallet list
+#### Use RainbowKit component as usual
 
 ```tsx
 import {ConnectButton} from '@rainbow-me/rainbowkit';
