@@ -1,31 +1,62 @@
+import type {Chain} from '@wagmi/core/chains'
+import {providers} from 'ethers'
+import {getAddress, hexValue} from 'ethers/lib/utils.js'
+import {Ethereum} from './types'
 import {
   AddChainError,
   Address,
   ChainNotConfiguredError,
+  Connector,
   ConnectorNotFoundError,
-  InjectedConnector,
-  InjectedConnectorOptions,
-  normalizeChainId,
   ProviderRpcError,
   ResourceUnavailableError,
   RpcError,
   SwitchChainError,
   UserRejectedRequestError,
-} from '@wagmi/core'
-import type { Chain } from '@wagmi/core/chains'
-import { providers } from 'ethers'
-import { getAddress, hexValue } from 'ethers/lib/utils.js'
-import { Ethereum } from './types'
+} from "wagmi";
 
-export type CLVConnectorOptions = Pick<InjectedConnectorOptions, 'shimChainChangedDisconnect' | 'shimDisconnect'> & {
+export function normalizeChainId(chainId: string | number | bigint) {
+  if (typeof chainId === 'string')
+    return Number.parseInt(
+      chainId,
+      chainId.trim().substring(0, 2) === '0x' ? 16 : 10,
+    )
+  if (typeof chainId === 'bigint') return Number(chainId)
+  return chainId
+}
+
+export type CloverConnectorOptions = {
+  /** Name of connector */
+  name?: string | ((detectedName: string | string[]) => string);
+  /**
+   * [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) Ethereum Provider to target
+   *
+   * @default
+   * () => typeof window !== 'undefined' ? window.ethereum : undefined
+   */
+  getProvider?: () => Window["ethereum"] | undefined;
+  /**
+   * MetaMask 10.9.3 emits disconnect event when chain is changed.
+   * This flag prevents the `"disconnect"` event from being emitted upon switching chains. See [GitHub issue](https://github.com/MetaMask/metamask-extension/issues/13375#issuecomment-1027663334) for more info.
+   */
+  shimChainChangedDisconnect?: boolean;
+  /**
+   * MetaMask and other injected providers do not support programmatic disconnect.
+   * This flag simulates the disconnect behavior by keeping track of connection status in storage. See [GitHub issue](https://github.com/MetaMask/metamask-extension/issues/10353) for more info.
+   * @default true
+   */
+  shimDisconnect?: boolean;
+};
+
+export type CLVConnectorOptions = Pick<CloverConnectorOptions, 'shimChainChangedDisconnect' | 'shimDisconnect'> & {
   /**
    * While "disconnected" with `shimDisconnect`, allows user to select a different MetaMask account (than the currently connected account) when trying to connect.
    */
   UNSTABLE_shimOnConnectSelectAccount?: boolean
 }
 
-export class CLVConnector extends InjectedConnector {
-  readonly id = 'CLV'
+export class CLVConnector extends Connector {
+  readonly id: string = 'CLV'
   declare readonly name: string
   declare readonly ready: boolean
 
@@ -35,10 +66,11 @@ export class CLVConnector extends InjectedConnector {
   protected shimDisconnectKey = `${this.id}.shimDisconnect`
   // @ts-ignore
   #UNSTABLE_shimOnConnectSelectAccount: CLVConnectorOptions['UNSTABLE_shimOnConnectSelectAccount']
+
   constructor({
-    chains,
-    options: options_,
-  }: {
+                chains,
+                options: options_,
+              }: {
     chains?: Chain[]
     options?: CLVConnectorOptions
   } = {}) {
@@ -65,10 +97,17 @@ export class CLVConnector extends InjectedConnector {
       ...options_,
     }
     // @ts-ignore
-    super({ chains, options })
+    super({chains, options})
     this.#UNSTABLE_shimOnConnectSelectAccount = options.UNSTABLE_shimOnConnectSelectAccount
+
+    const provider = options.getProvider()
+    if (typeof options.name === 'string') this.name = options.name
+
+    this.id = 'injected'
+    this.ready = !!provider
   }
-  async connect({ chainId }: { chainId?: number }) {
+
+  async connect({chainId}: { chainId?: number }) {
     try {
       const provider = await this.getProvider()
       if (!provider) throw new ConnectorNotFoundError()
@@ -77,7 +116,7 @@ export class CLVConnector extends InjectedConnector {
         provider.on('chainChanged', this.onChainChanged)
         provider.on('disconnect', this.onDisconnect)
       }
-      this.emit('message', { type: 'connecting' })
+      this.emit('message', {type: 'connecting'})
       let account: Address | null = null
       if (
         this.#UNSTABLE_shimOnConnectSelectAccount &&
@@ -91,7 +130,7 @@ export class CLVConnector extends InjectedConnector {
           try {
             await provider.request({
               method: 'wallet_requestPermissions',
-              params: [{ eth_accounts: {} }],
+              params: [{eth_accounts: {}}],
             })
             // User may have selected a different account so we will need to revalidate here.
             account = await this.getAccount()
@@ -119,7 +158,7 @@ export class CLVConnector extends InjectedConnector {
 
       if (this.options?.shimDisconnect) localStorage?.setItem(this.shimDisconnectKey, 'true')
 
-      return { account, chain: { id, unsupported }, provider }
+      return {account, chain: {id, unsupported}, provider}
     } catch (error) {
       if (this.isUserRejectedRequestError(error)) throw new UserRejectedRequestError(error)
       if ((error as RpcError).code === -32002) throw new ResourceUnavailableError(error)
@@ -152,7 +191,7 @@ export class CLVConnector extends InjectedConnector {
   async getChainId() {
     const provider = await this.getProvider()
     if (!provider) throw new ConnectorNotFoundError()
-    return provider.request({ method: 'eth_chainId' }).then(normalizeChainId)
+    return provider.request({method: 'eth_chainId'}).then(normalizeChainId)
   }
 
   async getProvider() {
@@ -160,6 +199,7 @@ export class CLVConnector extends InjectedConnector {
     if (provider) this.#provider = provider
     return this.#provider
   }
+
   async switchChain(chainId: number): Promise<any> {
     if (this.options.shimChainChangedDisconnect) this.#switchingChains = true
 
@@ -171,10 +211,10 @@ export class CLVConnector extends InjectedConnector {
       await Promise.all([
         provider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: id }],
+          params: [{chainId: id}],
         }),
         new Promise<void>((res) =>
-          this.on('change', ({ chain }) => {
+          this.on('change', ({chain}) => {
             if (chain?.id === chainId) res()
           })
         ),
@@ -184,13 +224,13 @@ export class CLVConnector extends InjectedConnector {
           id: chainId,
           name: `Chain ${id}`,
           network: `${id}`,
-          nativeCurrency: { name: 'Ether', decimals: 18, symbol: 'ETH' },
-          rpcUrls: { default: { http: [''] }, public: { http: [''] } },
+          nativeCurrency: {name: 'Ether', decimals: 18, symbol: 'ETH'},
+          rpcUrls: {default: {http: ['']}, public: {http: ['']}},
         }
       )
     } catch (error) {
       const chain = this.chains.find((x) => x.id === chainId)
-      if (!chain) throw new ChainNotConfiguredError({ chainId, connectorId: this.id })
+      if (!chain) throw new ChainNotConfiguredError({chainId, connectorId: this.id})
 
       // Indicates chain is not added to provider
       if (
@@ -223,9 +263,37 @@ export class CLVConnector extends InjectedConnector {
       throw new SwitchChainError(error)
     }
   }
-  async getSigner({ chainId }: { chainId?: number } = {}) {
+
+  async getSigner({chainId}: { chainId?: number } = {}) {
     const [provider, account] = await Promise.all([this.getProvider(), this.getAccount()])
     return new providers.Web3Provider(provider as providers.ExternalProvider, chainId).getSigner(account)
+  }
+
+  async watchAsset({
+                     address,
+                     decimals = 18,
+                     image,
+                     symbol,
+                   }: {
+    address: Address
+    decimals?: number
+    image?: string
+    symbol: string
+  }) {
+    const provider = await this.getProvider()
+    if (!provider) throw new ConnectorNotFoundError()
+    return provider.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          address,
+          decimals,
+          image,
+          symbol,
+        },
+      },
+    })
   }
 
   async isAuthorized() {
@@ -245,6 +313,7 @@ export class CLVConnector extends InjectedConnector {
       return false
     }
   }
+
   protected onAccountsChanged = (accounts: string[]) => {
     if (accounts.length === 0) this.emit('disconnect')
     else
@@ -256,7 +325,7 @@ export class CLVConnector extends InjectedConnector {
   protected onChainChanged = (chainId: number | string) => {
     const id = normalizeChainId(chainId)
     const unsupported = this.isChainUnsupported(id)
-    this.emit('change', { chain: { id, unsupported } })
+    this.emit('change', {chain: {id, unsupported}})
   }
 
   protected onDisconnect = () => {
