@@ -6,12 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "export": "next export",
     "lint": "next lint"
   },
   "dependencies": {
+    "@clover-network/clv-wagmi-connector": "^0.1.0",
     "@rainbow-me/rainbowkit": "^0.8.1",
     "@web3-react/core": "^6.1.9",
-    "clv-wagmi-connector": "../",
     "ethers": "^5.0.8",
     "next": "^13.1.6",
     "react": "^18.1.0",

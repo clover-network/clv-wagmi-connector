@@ -85,6 +85,15 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
+"@clover-network/clv-wagmi-connector@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@clover-network/clv-wagmi-connector/-/clv-wagmi-connector-0.1.0.tgz#1cdfb851da3ed6e41c03c43b660f8e66c5f689da"
+  integrity sha512-rtkBQ2WYYu84Z0h6pPDPDIj6m0UbE3kHUSfPc9iW5GFNnXW+J9tkqN2PWlmDGR3cgarjrajzcsbfrsaYmniZCw==
+  dependencies:
+    "@wagmi/core" "^0.9.5"
+    ethers "^5.0.8"
+    wagmi "0.11.5"
+
 "@coinbase/wallet-sdk@^3.5.4":
   version "3.6.3"
   resolved "https://registry.yarnpkg.com/@coinbase/wallet-sdk/-/wallet-sdk-3.6.3.tgz#fd96f6f19d5a0090520c1b014ad4737bbc8e1267"
@@ -2212,15 +2221,6 @@ clsx@^1.1.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
-
-clv-wagmi-connector@../:
-  version "1.0.0"
-  dependencies:
-    "@rainbow-me/rainbowkit" "^0.8.1"
-    "@wagmi/core" "^0.9.5"
-    "@web3-react/core" "^6.1.9"
-    ethers "^5.0.8"
-    wagmi "0.11.5"
 
 color-convert@^1.9.0:
   version "1.9.3"

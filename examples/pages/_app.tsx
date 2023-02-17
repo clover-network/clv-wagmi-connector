@@ -13,7 +13,7 @@ import {configureChains, createClient, WagmiConfig} from 'wagmi';
 import {arbitrum, goerli, mainnet, optimism, polygon} from 'wagmi/chains';
 import {alchemyProvider} from 'wagmi/providers/alchemy';
 import {publicProvider} from 'wagmi/providers/public';
-import {CLVConnector} from "clv-wagmi-connector";
+import {CLVConnector} from "@clover-network/clv-wagmi-connector";
 
 
 interface MyWalletOptions {
